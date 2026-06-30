@@ -2,7 +2,7 @@
 
 **Report ID:** SOC-LAB-2026-001  
 **Date:** June 29, 2026  
-**Analyst:** Oluwatamilore Adedeji-Ibraheem
+**Analyst:** Tamilo Eadedeji  
 **Host:** `WIN-K1DGK4BA0UM` (Windows 11 VM in UTM)  
 **SIEM:** Splunk Enterprise 10.4.0 on my Mac, `index=endpoint`  
 **Note:** This is a lab simulation, not a real incident.

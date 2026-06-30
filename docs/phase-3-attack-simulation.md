@@ -4,27 +4,29 @@ This is where I actually ran stuff on the VM to generate suspicious logs. Four t
 
 I snapped the VM first so I could roll back if I broke something.
 
-| MITRE | What I ran | What showed up in logs |
-|---|---|---|
-| T1110.001 | Fake logon attempts | Security event 4625 |
-| T1059.001 | Encoded PowerShell | Sysmon event 1 |
-| T1071.001 | HTTP requests in a loop | Sysmon event 3 |
-| T1547.001 | Registry Run key | Sysmon event 13 |
+The scripts are in [`scripts/attacks/`](../../scripts/attacks/) in the repo. I copied that folder to `C:\Lab\attacks` on the VM and ran them from Admin PowerShell.
 
-I skipped credential dumping (T1003) — too much AV hassle for a home lab.
+| MITRE | Script | What showed up in logs |
+|---|---|---|
+| T1110.001 | `T1110.001-brute-force.ps1` | Security event 4625 |
+| T1059.001 | `T1059.001-encoded-powershell.ps1` | Sysmon event 1 |
+| T1071.001 | `T1071.001-web-beacon.ps1` | Sysmon event 3 |
+| T1547.001 | `T1547.001-run-key.ps1` | Sysmon event 13 |
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+cd C:\Lab\attacks
+.\T1110.001-brute-force.ps1
+.\T1059.001-encoded-powershell.ps1
+.\T1071.001-web-beacon.ps1
+.\T1547.001-run-key.ps1
+```
+
+Cleanup after the run key test: `.\remove-run-key.ps1`
 
 ---
 
 ## Brute force (T1110.001)
-
-```powershell
-1..12 | ForEach-Object {
-  $p = ConvertTo-SecureString "WrongPass$_!" -AsPlainText -Force
-  $cred = New-Object System.Management.Automation.PSCredential("baduser", $p)
-  Start-Process cmd.exe -Credential $cred -ErrorAction SilentlyContinue
-  Start-Sleep -Milliseconds 400
-}
-```
 
 The logins fail on purpose. Each failure still creates a 4625 in the Security log.
 
@@ -38,12 +40,6 @@ index=endpoint EventCode=4625
 
 ## Encoded PowerShell (T1059.001)
 
-```powershell
-$cmd = "Write-Host 'AtomicRedTeam T1059 test'"
-$enc = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($cmd))
-powershell.exe -NoProfile -EncodedCommand $enc
-```
-
 ```spl
 index=endpoint EventCode=1 CommandLine="*EncodedCommand*"
 ```
@@ -54,13 +50,6 @@ index=endpoint EventCode=1 CommandLine="*EncodedCommand*"
 
 ## Web beacon (T1071.001)
 
-```powershell
-1..6 | ForEach-Object {
-  Invoke-WebRequest "http://www.example.com" -UseBasicParsing | Out-Null
-  Start-Sleep 3
-}
-```
-
 ```spl
 index=endpoint EventCode=3 Image="*powershell.exe"
 ```
@@ -70,12 +59,6 @@ index=endpoint EventCode=3 Image="*powershell.exe"
 ---
 
 ## Run key persistence (T1547.001)
-
-```powershell
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" `
-  -Name "AtomicRedTeamPersistence" `
-  -Value "powershell.exe -WindowStyle Hidden -Command Start-Sleep 3600" -Force
-```
 
 ```spl
 index=endpoint EventCode=13 TargetObject="*\\Run\\*"

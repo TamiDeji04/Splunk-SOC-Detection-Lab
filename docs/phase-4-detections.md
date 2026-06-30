@@ -2,6 +2,8 @@
 
 After the attacks worked, I wrote SPL searches to catch each one and saved them as reports in Splunk. These are what I turned into alerts in Phase 5.
 
+The same four searches are in [`splunk/savedsearches.conf`](../../splunk/savedsearches.conf) in the repo.
+
 | Report name | MITRE |
 |---|---|
 | Detect - T1110.001 - Brute Force Password Guessing | T1110.001 |

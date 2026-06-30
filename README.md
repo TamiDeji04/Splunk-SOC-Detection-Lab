@@ -6,6 +6,8 @@ I'm on an **M2 Mac with 8 GB RAM**, so the setup is a bit different from the usu
 
 Full writeup in [`docs/`](docs/README.md).
 
+**Scripts & configs:** [`scripts/`](scripts/README.md) (attack `.ps1`, Sysmon config) · [`splunk/savedsearches.conf`](splunk/savedsearches.conf)
+
 ---
 
 ## Setup

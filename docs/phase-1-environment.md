@@ -64,14 +64,14 @@ I took a snapshot of the clean VM before installing anything else.
 
 ## Sysmon
 
-I installed Sysmon64a (the ARM build — regular Sysmon did not work) with the SwiftOnSecurity config everyone recommends for labs:
+I installed Sysmon64a (the ARM build — regular Sysmon did not work) with the SwiftOnSecurity config ([`scripts/sysmon/sysmonconfig-export.xml`](../../scripts/sysmon/sysmonconfig-export.xml) in this repo):
 
 ```powershell
 $workDir = "C:\Windows\Temp\Sysmon"
 New-Item -ItemType Directory -Force -Path $workDir | Out-Null
 Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite-ARM64.zip" -OutFile "C:\Windows\Temp\SysInternals.zip"
 Expand-Archive "C:\Windows\Temp\SysInternals.zip" $workDir -Force
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "$workDir\sysmonconfig.xml"
+Copy-Item C:\Lab\sysmon\sysmonconfig-export.xml $workDir\sysmonconfig.xml   # or download from repo
 & "$workDir\Sysmon64a.exe" -accepteula -i "$workDir\sysmonconfig.xml"
 ```
 
