@@ -1,0 +1,6 @@
+.DS_Store
+*.dmg
+*.iso
+.env
+*hec-token*
+*splunk-password*
